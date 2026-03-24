@@ -15,19 +15,22 @@ jobs:
 
       - name: Setup Everything
         run: |
-          # On installe Theos
           bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
           echo "THEOS=/home/runner/theos" >> $GITHUB_ENV
           echo "/home/runner/theos/bin" >> $GITHUB_PATH
 
       - name: Build Package
         run: |
-          # On s'assure d'être dans le dossier du projet (là où est ton Makefile)
-          cd $GITHUB_WORKSPACE
           export THEOS=/home/runner/theos
           export PATH=$THEOS/bin:$PATH
-          # On compile
-          make package FINALPACKAGE=1
+          
+          # On vérifie ce qui existe vraiment dans le dossier sdks
+          echo "--- Liste des SDKs trouvés ---"
+          ls -R $THEOS/sdks
+          
+          # On lance la compilation en disant à Theos d'ignorer ses doutes
+          # On lui donne le chemin direct vers le premier SDK qu'il trouve
+          make package FINALPACKAGE=1 SDKPATH=$(ls -d $THEOS/sdks/*.sdk | head -n 1)
         env:
           THEOS: /home/runner/theos
 
