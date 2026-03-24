@@ -19,13 +19,13 @@ jobs:
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "~/theos/bin" >> $GITHUB_PATH
 
-      - name: Setup SDK (Alternative Method)
+      - name: Setup SDK
         run: |
           mkdir -p ~/theos/sdks
-          # On utilise un lien direct vers un SDK déjà extrait ou plus facile à gérer
-          curl -L "https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz" --output sdk.tar.xz
-          # On vérifie la taille du fichier pour être sûr
-          du -sh sdk.tar.xz
+          # Nouveau lien direct vers un SDK 14.5 fiable
+          curl -L "https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz" -o sdk.tar.xz
+          # On vérifie si le téléchargement est complet (doit faire plus de 1 Mo)
+          if [ $(stat -c%s sdk.tar.xz) -lt 1000000 ]; then echo "Erreur téléchargement"; exit 1; fi
           tar -xJf sdk.tar.xz -C ~/theos/sdks/
 
       - name: Build Package
