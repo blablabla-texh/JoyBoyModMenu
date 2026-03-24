@@ -15,19 +15,18 @@ jobs:
 
       - name: Setup Everything
         run: |
-          # On utilise le script qui a marché au build précédent
+          # On installe Theos
           bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
-          
-          # On définit les variables pour que GitHub les reconnaisse
           echo "THEOS=/home/runner/theos" >> $GITHUB_ENV
           echo "/home/runner/theos/bin" >> $GITHUB_PATH
 
       - name: Build Package
         run: |
-          # On exporte manuellement THEOS juste pour être sûr
+          # On s'assure d'être dans le dossier du projet (là où est ton Makefile)
+          cd $GITHUB_WORKSPACE
           export THEOS=/home/runner/theos
-          # On lance la compilation directement
-          # Le script installe par défaut le SDK iPhoneOS16.5.sdk ou similaire
+          export PATH=$THEOS/bin:$PATH
+          # On compile
           make package FINALPACKAGE=1
         env:
           THEOS: /home/runner/theos
