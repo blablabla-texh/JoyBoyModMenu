@@ -1,12 +1,12 @@
-TARGET = iphone:clang:latest:14.0
-ARCHS = arm64 arm64e
 DEBUG = 0
 FINALPACKAGE = 1
 
-include $(THEOS)/makefiles/common.mk
-
+# Remplace par le nom de ton projet si nécessaire
 TWEAK_NAME = JoyBoyModMenu
-JoyBoyModMenu_FILES = Menu.xm
-JoyBoyModMenu_FRAMEWORKS = UIKit Foundation CoreGraphics QuartzCore
 
+$(TWEAK_NAME)_FILES = Menu.xm
+$(TWEAK_NAME)_CFLAGS = -fobjc-arc
+$(TWEAK_NAME)_FRAMEWORKS = UIKit Foundation CoreGraphics
+
+include $(THEOS)/makefiles/common.mk
 include $(THEOS_MAKE_PATH)/tweak.mk
