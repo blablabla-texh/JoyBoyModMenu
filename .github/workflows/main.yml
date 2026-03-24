@@ -8,18 +8,10 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
 
-      - name: Setup Theos and Build
-        uses: msrv-dev/theos-action@main
+      - name: Build with Theos Action
+        uses: theo-com/theos-action@v1
         with:
-          theos-src: https://github.com/theos/theos.git
-          sdk-url: https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz
+          theos-sdks: https://github.com/theos/sdks # Il va essayer de le gérer en interne
         env:
-          THEOS_PACKAGE_SCHEME: rootless # Ou supprime cette ligne si tu veux du non-rootless
+          HOMEBREW_NO_AUTO_UPDATE: 1
           FINALPACKAGE: 1
-
-      - name: Upload Artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: JoyBoyModMenu-Package
-          path: packages/*.deb
