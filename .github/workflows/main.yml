@@ -8,19 +8,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl perl git checkinstall libssl-dev
+
       - name: Setup Theos
-        uses: kabiroberai/setup-theos-action@v1
+        run: |
+          git clone --recursive https://github.com/theos/theos.git ~/theos
+          curl -L https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz | tar -xJ -C ~/theos/sdks
+          echo "THEOS=~/theos" >> $GITHUB_ENV
+          echo "~/theos/bin" >> $GITHUB_PATH
 
       - name: Build Package
         run: |
           make package FINALPACKAGE=1
         env:
-          THEOS: ${{ github.workspace }}/theos
+          THEOS: ~/theos
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: JoyBoyModMenu-Package
           path: packages/*.deb
-
-
