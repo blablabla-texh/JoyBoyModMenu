@@ -15,22 +15,23 @@ jobs:
 
       - name: Setup Theos & Toolchain
         run: |
-          # Installation automatique de Theos et de la Toolchain
+          # On utilise le script qui a marché !
           bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
           echo "THEOS=/home/runner/theos" >> $GITHUB_ENV
           echo "/home/runner/theos/bin" >> $GITHUB_PATH
 
-      - name: Setup SDK (Direct Clone)
+      - name: Setup SDK
         run: |
-          # On clone le SDK (cette partie-là marchait bien chez toi !)
-          mkdir -p /home/runner/theos/sdks
-          git clone --depth 1 https://github.com/theos/sdks.git /home/runner/theos/sdks
+          # On télécharge le SDK proprement dans le dossier créé par le script
+          curl -LO https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz
+          tar -xJf iPhoneOS14.5.sdk.tar.xz -C /home/runner/theos/sdks
+          rm iPhoneOS14.5.sdk.tar.xz
 
       - name: Build Package
         run: |
           export THEOS=/home/runner/theos
-          # On lance la compilation
-          make package FINALPACKAGE=1 SDKPATH=/home/runner/theos/sdks/iPhoneOS14.5.sdk
+          # On compile le projet
+          make package FINALPACKAGE=1
         env:
           THEOS: /home/runner/theos
 
