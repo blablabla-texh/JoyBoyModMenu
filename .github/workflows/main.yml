@@ -8,18 +8,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Theos
-        uses: theos/setup-theos@master
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl perl git libssl-dev
 
-      - name: Setup iOS SDK
-        uses: actions/checkout@v4
-        with:
-          repository: theos/sdks
-          path: theos/sdks
-          sparse-checkout: |
-            iPhoneOS14.5.sdk
+      - name: Setup Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git ~/theos
+          echo "THEOS=~/theos" >> $GITHUB_ENV
+          echo "~/theos/bin" >> $GITHUB_PATH
+
+      - name: Setup SDK (Direct Clone)
+        run: |
+          # On clone directement le dépôt des SDKs dans le bon dossier
+          git clone --depth 1 https://github.com/theos/sdks.git ~/theos/sdks
 
       - name: Build Package
         run: |
-          export THEOS=$GITHUB_WORKSPACE/theos
-          make package FINALPACKAGE=1 SDKPATH=$THEOS/sdks/iPhoneOS14.5.sdk
+          export THEOS=~/theos
+          # On cible le SDK 14.5 qu'on vient de cloner
+          make package FINALPACKAGE=1 SDKPATH=~/theos/sdks/iPhoneOS14.5.sdk
+        env:
+          THEOS: ~/theos
+
+      - name: Upload Artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JoyBoyModMenu-Package
+          path: ./*.deb
