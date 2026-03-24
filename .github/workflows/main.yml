@@ -15,11 +15,15 @@ jobs:
           # 1. Autoriser Git
           git config --global --add safe.directory $GITHUB_WORKSPACE
           
-          # 2. Compiler (on utilise le SDK inclus dans l'image)
-          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          # 2. On installe les headers manquants (Substrate) au cas où
+          curl -L https://github.com/theos/headers/archive/master.tar.gz | tar -xz -C /theos/include --strip-components=1
           
-          # 3. FIX DES PERMISSIONS (Indispensable pour Docker)
-          # On redonne les droits à l'utilisateur standard pour l'artifact
+          # 3. Compiler
+          # On retire le mode rootless temporairement pour voir si ça passe en standard
+          export THEOS=/theos
+          make package FINALPACKAGE=1
+          
+          # 4. Fix des permissions pour l'artifact
           chown -R 1001:127 .
         working-directory: ${{ github.workspace }}
 
