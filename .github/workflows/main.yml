@@ -8,40 +8,18 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
 
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential perl git libssl-dev
-
-      - name: Setup Theos
-        run: |
-          git clone --recursive https://github.com/theos/theos.git ~/theos
-          echo "THEOS=~/theos" >> $GITHUB_ENV
-          echo "~/theos/bin" >> $GITHUB_PATH
-
-      - name: Setup Toolchain (Git Clone)
-        run: |
-          # On clone la toolchain au lieu de la télécharger
-          mkdir -p ~/theos/toolchain/linux/iphone
-          git clone --depth 1 https://github.com/theos/toolchain.git ~/theos/toolchain/linux/iphone
-
-      - name: Setup SDK (Git Clone)
-        run: |
-          # On clone les SDK au lieu de les télécharger
-          rm -rf ~/theos/sdks
-          git clone --depth 1 https://github.com/theos/sdks.git ~/theos/sdks
-
-      - name: Build Package
-        run: |
-          export THEOS=~/theos
-          # On utilise le SDK qu'on vient de cloner (le 14.5 est dans le dossier)
-          make package FINALPACKAGE=1 SDKPATH=~/theos/sdks/iPhoneOS14.5.sdk
+      - name: Setup Theos and Build
+        uses: msrv-dev/theos-action@main
+        with:
+          theos-src: https://github.com/theos/theos.git
+          sdk-url: https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz
         env:
-          THEOS: ~/theos
+          THEOS_PACKAGE_SCHEME: rootless # Ou supprime cette ligne si tu veux du non-rootless
+          FINALPACKAGE: 1
 
       - name: Upload Artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: JoyBoyModMenu-Package
-          path: ./*.deb
+          path: packages/*.deb
