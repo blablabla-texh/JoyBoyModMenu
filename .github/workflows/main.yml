@@ -8,33 +8,13 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
 
-      - name: Install Theos & Tools
-        run: |
-          # 1. Installation de Theos
-          git clone --recursive https://github.com/theos/theos.git $HOME/theos
-          
-          # 2. Installation de la Toolchain (Le cerveau du build)
-          curl -LO https://github.com/theos/toolchain/releases/download/linux-arm64/iphone-9.2-layman-arm64.tar.xz
-          mkdir -p $HOME/theos/toolchain
-          tar -xf iphone-9.2-layman-arm64.tar.xz -C $HOME/theos/toolchain
-          
-          # 3. Téléchargement du SDK
-          mkdir -p $HOME/theos/sdks
-          curl -L https://github.com/theos/sdks/archive/master.tar.gz | tar -xz -C $HOME/theos/sdks --strip-components=1
-          
-          # 4. Téléchargement des Headers Substrate
-          curl -L https://github.com/theos/headers/archive/master.tar.gz | tar -xz -C $HOME/theos/include --strip-components=1
+      - name: Theos Action Build
+        uses: msrv-dev/theos-action@v1.3
+        with:
+          theos_sdks: https://github.com/theos/sdks/archive/master.tar.gz
 
-      - name: Build Package
-        run: |
-          export THEOS=$HOME/theos
-          export PATH=$THEOS/bin:$THEOS/toolchain/linux/iphone/bin:$PATH
-          # On compile
-          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-        
       - name: Upload Artifact
-        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: JoyBoyModMenu-Package
+          name: JoyBoyModMenu
           path: packages/*.deb
