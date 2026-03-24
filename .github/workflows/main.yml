@@ -10,9 +10,6 @@ jobs:
 
       - name: Setup Theos
         uses: theos/setup-theos@v1
-        with:
-          # On ne met rien ici pour qu'il utilise sa propre version interne
-          # sans aller chercher de liens externes qui cassent.
 
       - name: Build Package
         run: |
@@ -24,5 +21,5 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: JoyBoyModMenu-Package
+          name: JoyBoy-Menu
           path: packages/*.deb
