@@ -11,7 +11,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential perl git libssl-dev ccache
+          sudo apt-get install -y build-essential perl git libssl-dev
 
       - name: Setup Theos
         run: |
@@ -19,15 +19,13 @@ jobs:
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "~/theos/bin" >> $GITHUB_PATH
 
-      - name: Setup Toolchain
+      - name: Setup Toolchain (Direct Clone)
         run: |
-          # On télécharge les outils de compilation pour Linux
-          curl -LO https://github.com/theos/toolchain/releases/download/linux-arm64/toolchain-linux-arm64.tar.xz
-          mkdir -p ~/theos/toolchain/linux/iphone
-          tar -xJf toolchain-linux-arm64.tar.xz -C ~/theos/toolchain/linux/iphone
-          rm toolchain-linux-arm64.tar.xz
+          # On clone les outils de compilation directement sans compression
+          mkdir -p ~/theos/toolchain/linux
+          git clone --depth 1 https://github.com/theos/toolchain.git ~/theos/toolchain/linux/iphone
 
-      - name: Setup SDK
+      - name: Setup SDK (Direct Clone)
         run: |
           rm -rf ~/theos/sdks
           git clone --depth 1 https://github.com/theos/sdks.git ~/theos/sdks
@@ -35,6 +33,7 @@ jobs:
       - name: Build Package
         run: |
           export THEOS=~/theos
+          # On compile enfin avec tous les outils en place
           make package FINALPACKAGE=1 SDKPATH=~/theos/sdks/iPhoneOS14.5.sdk
         env:
           THEOS: ~/theos
