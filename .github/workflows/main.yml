@@ -3,20 +3,29 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
 
-      - name: Setup Theos
-        uses: theos/setup-theos@v1
-        with:
-          theos-src: https://github.com/theos/theos.git
+      - name: Install Theos & Tools
+        run: |
+          # Installation de Theos
+          git clone --recursive https://github.com/theos/theos.git $HOME/theos
+          
+          # Téléchargement manuel du SDK
+          mkdir -p $HOME/theos/sdks
+          curl -L https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz | tar -xf - -C $HOME/theos/sdks
+          
+          # Téléchargement des Headers Substrate
+          curl -L https://github.com/theos/headers/archive/master.tar.gz | tar -xz -C $HOME/theos/include --strip-components=1
 
       - name: Build Package
         run: |
-          export THEOS=$GITHUB_WORKSPACE/theos
-          make package FINALPACKAGE=1
+          export THEOS=$HOME/theos
+          export PATH=$THEOS/bin:$PATH
+          # On force la compilation
+          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
         
       - name: Upload Artifact
         if: success()
