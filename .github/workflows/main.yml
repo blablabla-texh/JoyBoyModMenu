@@ -11,26 +11,37 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential perl git libssl-dev xz-utils
+          sudo apt-get install -y build-essential perl git libssl-dev
 
       - name: Setup Theos
         run: |
           git clone --recursive https://github.com/theos/theos.git ~/theos
-          # On télécharge la Toolchain (les outils)
-          curl -L https://github.com/theos/toolchain/releases/download/linux-arm64/toolchain-linux-arm64.tar.xz -o toolchain.tar.xz
-          mkdir -p ~/theos/toolchain/linux/iphone
-          tar -xJf toolchain.tar.xz -C ~/theos/toolchain/linux/iphone
-          
-          # On télécharge un SDK léger et fiable (iOS 12.2)
-          mkdir -p ~/theos/sdks
-          curl -L https://github.com/theos/sdks/raw/master/iPhoneOS12.2.sdk.tar.xz -o sdk.tar.xz
-          tar -xJf sdk.tar.xz -C ~/theos/sdks/
-          
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "~/theos/bin" >> $GITHUB_PATH
+
+      - name: Setup Toolchain (Git Clone)
+        run: |
+          # On clone la toolchain au lieu de la télécharger
+          mkdir -p ~/theos/toolchain/linux/iphone
+          git clone --depth 1 https://github.com/theos/toolchain.git ~/theos/toolchain/linux/iphone
+
+      - name: Setup SDK (Git Clone)
+        run: |
+          # On clone les SDK au lieu de les télécharger
+          rm -rf ~/theos/sdks
+          git clone --depth 1 https://github.com/theos/sdks.git ~/theos/sdks
 
       - name: Build Package
         run: |
           export THEOS=~/theos
-          # On dit à Theos d'utiliser le SDK qu'on vient de mettre
-          make package FINALPACKAGE=1 SDKPATH=~/theos/sdks/iPhoneOS12.2.sdk
+          # On utilise le SDK qu'on vient de cloner (le 14.5 est dans le dossier)
+          make package FINALPACKAGE=1 SDKPATH=~/theos/sdks/iPhoneOS14.5.sdk
+        env:
+          THEOS: ~/theos
+
+      - name: Upload Artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JoyBoyModMenu-Package
+          path: ./*.deb
