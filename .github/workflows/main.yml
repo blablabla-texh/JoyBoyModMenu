@@ -8,13 +8,29 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4
 
-      - name: Theos Action Build
-        uses: msrv-dev/theos-action@v1.3
-        with:
-          theos_sdks: https://github.com/theos/sdks/archive/master.tar.gz
+      - name: Setup Theos & SDK
+        run: |
+          # Installation propre de Theos
+          git clone --recursive https://github.com/theos/theos.git $HOME/theos
+          
+          # Téléchargement manuel du SDK (Lien direct alternatif)
+          mkdir -p $HOME/theos/sdks
+          curl -L https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz -o $HOME/theos/sdks/sdk.tar.xz
+          tar -xf $HOME/theos/sdks/sdk.tar.xz -C $HOME/theos/sdks
+          
+          # Téléchargement des Headers Substrate
+          curl -L https://github.com/theos/headers/archive/master.tar.gz | tar -xz -C $HOME/theos/include --strip-components=1
 
+      - name: Build Package
+        run: |
+          export THEOS=$HOME/theos
+          export PATH=$THEOS/bin:$PATH
+          # On compile en mode rootless pour les iOS récents
+          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+        
       - name: Upload Artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: JoyBoyModMenu
+          name: JoyBoy-Package-DEB
           path: packages/*.deb
