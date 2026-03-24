@@ -1,5 +1,9 @@
 #import <UIKit/UIKit.h>
-#import <substrate.h>
+
+// On définit manuellement pour éviter les erreurs de headers
+@interface UIViewController (JoyBoy)
+- (void)showJoyBoy;
+@end
 
 %hook UIViewController
 
@@ -8,8 +12,8 @@
 
     if (![self.view viewWithTag:999]) {
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-        btn.frame = CGRectMake(50, 100, 60, 60);
-        btn.layer.cornerRadius = 30;
+        btn.frame = CGRectMake(50, 100, 70, 70);
+        btn.layer.cornerRadius = 35;
         btn.backgroundColor = [UIColor redColor];
         btn.tag = 999;
         [btn setTitle:@"JB" forState:UIControlStateNormal];
