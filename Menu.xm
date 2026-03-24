@@ -6,16 +6,13 @@
 - (void)viewDidAppear:(BOOL)animated {
     %orig;
 
-    // On vérifie si on est sur une vue principale et si le bouton n'existe pas déjà
-    if ([self.view isUserInteractionEnabled] && ![self.view viewWithTag:999]) {
+    if (![self.view viewWithTag:999]) {
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
         btn.frame = CGRectMake(50, 100, 60, 60);
         btn.layer.cornerRadius = 30;
         btn.backgroundColor = [UIColor redColor];
         btn.tag = 999;
-        btn.clipsToBounds = YES;
         [btn setTitle:@"JB" forState:UIControlStateNormal];
-        
         [btn addTarget:self action:@selector(showJoyBoy) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:btn];
     }
