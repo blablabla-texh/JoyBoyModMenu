@@ -5,19 +5,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/theos/theos:latest # Utilise l'environnement officiel pré-installé
+      image: ghcr.io/theos/theos:latest
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
 
       - name: Build Package
         run: |
-          # Dans ce conteneur, THEOS est déjà configuré
-          # On installe juste les outils de base si besoin
+          # On donne les pleins pouvoirs au dossier
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          
+          # On force les variables d'environnement internes
           export THEOS=/theos
-          make package FINALPACKAGE=1
-        env:
-          THEOS: /theos
+          export PATH=$THEOS/bin:$PATH
+          
+          # On compile en mode rootless (plus moderne)
+          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+        working-directory: ${{ github.workspace }}
 
       - name: Upload Artifact
         if: success()
