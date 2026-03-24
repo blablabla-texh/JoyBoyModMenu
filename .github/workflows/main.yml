@@ -6,10 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Theos
-        uses: RandomHashCoding/theos-action@v1
+        uses: theos/setup-theos-action@v1
 
       - name: Build Package
         run: |
@@ -18,7 +18,7 @@ jobs:
           THEOS: ${{ github.workspace }}/theos
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: JoyBoyModMenu-Package
           path: packages/*.deb
