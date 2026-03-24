@@ -14,3 +14,11 @@ jobs:
       - name: Build Package
         run: |
           make package FINALPACKAGE=1
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: JoyBoyModMenu-Package
+          path: packages/*.deb
