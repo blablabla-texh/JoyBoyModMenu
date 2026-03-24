@@ -5,22 +5,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Project
         uses: actions/checkout@v4
 
-      - name: Setup
+      - name: Setup Theos
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential perl git curl
-          git clone --recursive https://github.com/theos/theos.git $HOME/theos
-          mkdir -p $HOME/theos/sdks
-          curl -L https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz -o $HOME/theos/sdks/sdk.tar.xz
-          tar -xf $HOME/theos/sdks/sdk.tar.xz -C $HOME/theos/sdks
-          curl -L https://github.com/theos/headers/archive/master.tar.gz | tar -xz -C $HOME/theos/include --strip-components=1
-
-      - name: Build
+          sudo apt-get update && sudo apt-get install -y build-essential perl git curl
+          # On installe Theos (obligé de passer par Git pour lui, mais c'est léger)
+          git clone --depth 1 https://github.com/theos/theos.git $GITHUB_WORKSPACE/theos
+          
+          # Téléchargement DIRECT du SDK (Lien qui ne casse pas)
+          mkdir -p $GITHUB_WORKSPACE/theos/sdks
+          curl -L https://github.com/theos/sdks/raw/master/iPhoneOS14.4.sdk.tar.xz -o sdk.tar.xz
+          tar -xf sdk.tar.xz -C $GITHUB_WORKSPACE/theos/sdks/
+          
+      - name: Build JoyBoy
         run: |
-          export THEOS=$HOME/theos
+          export THEOS=$GITHUB_WORKSPACE/theos
           export PATH=$THEOS/bin:$PATH
           make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
         
@@ -28,6 +29,5 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: JoyBoy-Menu-Final
+          name: JoyBoy-Menu
           path: packages/*.deb
-
