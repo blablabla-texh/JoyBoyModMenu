@@ -1,25 +1,22 @@
 #import <UIKit/UIKit.h>
 
 %hook UIViewController
-
 - (void)viewDidAppear:(BOOL)animated {
     %orig;
     if (![self.view viewWithTag:999]) {
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        button.frame = CGRectMake(20, 100, 60, 60);
-        button.layer.cornerRadius = 30;
-        button.backgroundColor = [UIColor redColor];
-        button.tag = 999;
-        [button addTarget:self action:@selector(showJoyBoyMenu) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:button];
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        btn.frame = CGRectMake(50, 100, 60, 60);
+        btn.layer.cornerRadius = 30;
+        btn.backgroundColor = [UIColor redColor];
+        btn.tag = 999;
+        [btn addTarget:self action:@selector(showJoyBoy) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:btn];
     }
 }
-
 %new
-- (void)showJoyBoyMenu {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"JoyBoy" message:@"Menu OK" preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-    [self presentViewController:alert animated:YES completion:nil];
+- (void)showJoyBoy {
+    UIAlertController *a = [UIAlertController alertControllerWithTitle:@"JoyBoy" message:@"Menu OK" preferredStyle:UIAlertControllerStyleAlert];
+    [a addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+    [self presentViewController:a animated:YES completion:nil];
 }
-
 %end
