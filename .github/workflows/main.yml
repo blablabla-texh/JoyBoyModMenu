@@ -15,20 +15,20 @@ jobs:
 
       - name: Setup Theos
         run: |
+          # On installe Theos proprement
           git clone --recursive https://github.com/theos/theos.git ~/theos
+          # On télécharge juste LE fichier SDK nécessaire au lieu de tout cloner
+          mkdir -p ~/theos/sdks
+          curl -L "https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz" -o sdk.tar.xz
+          tar -xJf sdk.tar.xz -C ~/theos/sdks/
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "~/theos/bin" >> $GITHUB_PATH
-
-      - name: Setup SDK (Direct Clone)
-        run: |
-          # On clone directement le dépôt des SDKs dans le bon dossier
-          git clone --depth 1 https://github.com/theos/sdks.git ~/theos/sdks
 
       - name: Build Package
         run: |
           export THEOS=~/theos
-          # On cible le SDK 14.5 qu'on vient de cloner
-          make package FINALPACKAGE=1 SDKPATH=~/theos/sdks/iPhoneOS14.5.sdk
+          # On lance la compilation finale
+          make package FINALPACKAGE=1
         env:
           THEOS: ~/theos
 
