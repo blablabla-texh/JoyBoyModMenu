@@ -8,6 +8,11 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = JoyBoyModMenu
 JoyBoyModMenu_FILES = tweak.xm
 JoyBoyModMenu_FRAMEWORKS = UIKit Foundation CoreGraphics QuartzCore
-JoyBoyModMenu_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries/
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+
+# Ce bloc magique cherche n'importe quelle image et la renomme correctement pour le tweak
+before-package::
+	mkdir -p $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/
+	cp logo* $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/logo.png
+
