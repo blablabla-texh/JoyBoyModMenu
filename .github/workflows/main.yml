@@ -11,29 +11,32 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential curl perl git libssl-dev xz-utils ccache
+          sudo apt-get install -y build-essential curl perl git libssl-dev xz-utils
 
-      - name: Setup Theos & SDK
+      - name: Setup Theos
         run: |
           git clone --recursive https://github.com/theos/theos.git ~/theos
-          mkdir -p ~/theos/sdks
-          # On télécharge un SDK depuis un miroir plus stable
-          curl -ksL "https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz" -o sdk.tar.xz
-          tar -xJf sdk.tar.xz -C ~/theos/sdks/
-          # On vérifie si ça a marché
-          ls -l ~/theos/sdks/
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "~/theos/bin" >> $GITHUB_PATH
+
+      - name: Setup SDK (Alternative Method)
+        run: |
+          mkdir -p ~/theos/sdks
+          # On utilise un lien direct vers un SDK déjà extrait ou plus facile à gérer
+          curl -L "https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz" --output sdk.tar.xz
+          # On vérifie la taille du fichier pour être sûr
+          du -sh sdk.tar.xz
+          tar -xJf sdk.tar.xz -C ~/theos/sdks/
 
       - name: Build Package
         run: |
           export THEOS=~/theos
-          # On force le chemin du SDK si Theos ne le trouve pas
-          make package FINALPACKAGE=1 SDKPATH=~/theos/sdks/iPhoneOS14.5.sdk
+          make package FINALPACKAGE=1
         env:
           THEOS: ~/theos
 
       - name: Upload Artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: JoyBoyModMenu-Package
