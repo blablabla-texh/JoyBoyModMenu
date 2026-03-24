@@ -8,4 +8,4 @@ $(TWEAK_NAME)_FILES = Menu.xm
 $(TWEAK_NAME)_CFLAGS = -fobjc-arc
 $(TWEAK_NAME)_FRAMEWORKS = UIKit Foundation CoreGraphics
 
-include $(THEOS_MAKE_PATH)/tweak.mk
+include $(THEOS_MAKE_PATH)/tweak.m
