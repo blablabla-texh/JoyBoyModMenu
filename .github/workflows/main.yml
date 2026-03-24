@@ -13,33 +13,26 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential perl git libssl-dev xz-utils
 
-      - name: Setup Theos
+      - name: Setup Theos & Toolchain
         run: |
-          git clone --recursive https://github.com/theos/theos.git ~/theos
-          echo "THEOS=~/theos" >> $GITHUB_ENV
-          echo "~/theos/bin" >> $GITHUB_PATH
-
-      - name: Setup Toolchain
-        run: |
-          # Téléchargement d'une toolchain pré-compilée pour Linux
-          curl -LO https://github.com/kabiroberai/theos-toolchain-linux/releases/download/v2.0.0/toolchain-linux-arm64.tar.xz
-          mkdir -p ~/theos/toolchain/linux/iphone
-          tar -xJf toolchain-linux-arm64.tar.xz -C ~/theos/toolchain/linux/iphone
-          rm toolchain-linux-arm64.tar.xz
+          # Installation automatique de Theos et de la Toolchain
+          bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
+          echo "THEOS=/home/runner/theos" >> $GITHUB_ENV
+          echo "/home/runner/theos/bin" >> $GITHUB_PATH
 
       - name: Setup SDK (Direct Clone)
         run: |
-          # Cette étape fonctionnait déjà, on la garde !
-          rm -rf ~/theos/sdks
-          git clone --depth 1 https://github.com/theos/sdks.git ~/theos/sdks
+          # On clone le SDK (cette partie-là marchait bien chez toi !)
+          mkdir -p /home/runner/theos/sdks
+          git clone --depth 1 https://github.com/theos/sdks.git /home/runner/theos/sdks
 
       - name: Build Package
         run: |
-          export THEOS=~/theos
-          # On force l'utilisation des bons outils
-          make package FINALPACKAGE=1 SDKPATH=~/theos/sdks/iPhoneOS14.5.sdk
+          export THEOS=/home/runner/theos
+          # On lance la compilation
+          make package FINALPACKAGE=1 SDKPATH=/home/runner/theos/sdks/iPhoneOS14.5.sdk
         env:
-          THEOS: ~/theos
+          THEOS: /home/runner/theos
 
       - name: Upload Artifact
         if: success()
