@@ -5,30 +5,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Project
         uses: actions/checkout@v4
 
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential curl perl git libssl-dev
+          sudo apt-get install -y build-essential perl git libssl-dev
 
       - name: Setup Theos
         run: |
-          # On installe Theos proprement
           git clone --recursive https://github.com/theos/theos.git ~/theos
-          # On télécharge juste LE fichier SDK nécessaire au lieu de tout cloner
-          mkdir -p ~/theos/sdks
-          curl -L "https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz" -o sdk.tar.xz
-          tar -xJf sdk.tar.xz -C ~/theos/sdks/
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "~/theos/bin" >> $GITHUB_PATH
+
+      - name: Setup SDK (The Hard Way)
+        run: |
+          # On nettoie tout avant pour éviter l'erreur "already exists"
+          rm -rf ~/theos/sdks
+          # On clone directement le dossier des SDKs
+          git clone --depth 1 https://github.com/theos/sdks.git ~/theos/sdks
 
       - name: Build Package
         run: |
           export THEOS=~/theos
-          # On lance la compilation finale
-          make package FINALPACKAGE=1
+          # On force le chemin vers le SDK qu'on vient de cloner
+          make package FINALPACKAGE=1 SDKPATH=~/theos/sdks/iPhoneOS14.5.sdk
         env:
           THEOS: ~/theos
 
