@@ -11,8 +11,9 @@ JoyBoyModMenu_FRAMEWORKS = UIKit Foundation CoreGraphics QuartzCore
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
-# Ce bloc magique cherche n'importe quelle image et la renomme correctement pour le tweak
+# Ce bloc règle ton problème de nom d'image automatiquement :
 before-package::
 	mkdir -p $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/
 	cp logo* $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/logo.png
+
 
