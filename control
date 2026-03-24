@@ -1,9 +1,8 @@
 Package: com.joyboy.onestate
 Name: JoyBoyModMenu
-Depends: mobilesubstrate
 Version: 1.0.0
 Architecture: iphoneos-arm
-Description: Mod Menu pour OneState
 Maintainer: JoyBoy
 Author: JoyBoy
 Section: Tweaks
+Depends: mobilesubstrate
