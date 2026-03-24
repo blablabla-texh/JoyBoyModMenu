@@ -1,9 +1,9 @@
-Package: com.joyboy.modmenu
+Package: com.blablabla.joyboymodmenu
 Name: JoyBoyModMenu
 Depends: mobilesubstrate
-Version: 1.0.0
+Version: 0.0.1
 Architecture: iphoneos-arm
-Description: Menu Overlay Gear 5 Style
-Maintainer: Joy Boy
-Author: Joy Boy
+Description: Mon premier Mod Menu
+Maintainer: blablabla-texh
+Author: blablabla-texh
 Section: Tweaks
