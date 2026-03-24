@@ -13,24 +13,21 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential perl git libssl-dev xz-utils
 
-      - name: Setup Theos & Toolchain
+      - name: Setup Everything
         run: |
-          # On utilise le script qui a marché !
+          # On utilise le script qui a marché au build précédent
           bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
+          
+          # On définit les variables pour que GitHub les reconnaisse
           echo "THEOS=/home/runner/theos" >> $GITHUB_ENV
           echo "/home/runner/theos/bin" >> $GITHUB_PATH
 
-      - name: Setup SDK
-        run: |
-          # On télécharge le SDK proprement dans le dossier créé par le script
-          curl -LO https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz
-          tar -xJf iPhoneOS14.5.sdk.tar.xz -C /home/runner/theos/sdks
-          rm iPhoneOS14.5.sdk.tar.xz
-
       - name: Build Package
         run: |
+          # On exporte manuellement THEOS juste pour être sûr
           export THEOS=/home/runner/theos
-          # On compile le projet
+          # On lance la compilation directement
+          # Le script installe par défaut le SDK iPhoneOS16.5.sdk ou similaire
           make package FINALPACKAGE=1
         env:
           THEOS: /home/runner/theos
