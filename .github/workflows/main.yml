@@ -4,14 +4,24 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/theos/theos:latest # Utilise l'environnement officiel pré-installé
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
 
-      - name: Build with Theos Action
-        uses: theo-com/theos-action@v1
-        with:
-          theos-sdks: https://github.com/theos/sdks # Il va essayer de le gérer en interne
+      - name: Build Package
+        run: |
+          # Dans ce conteneur, THEOS est déjà configuré
+          # On installe juste les outils de base si besoin
+          export THEOS=/theos
+          make package FINALPACKAGE=1
         env:
-          HOMEBREW_NO_AUTO_UPDATE: 1
-          FINALPACKAGE: 1
+          THEOS: /theos
+
+      - name: Upload Artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JoyBoyModMenu-Package
+          path: packages/*.deb
