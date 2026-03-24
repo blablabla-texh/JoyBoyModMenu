@@ -12,15 +12,15 @@ jobs:
 
       - name: Build Package
         run: |
-          # On donne les pleins pouvoirs au dossier
+          # 1. Autoriser Git
           git config --global --add safe.directory $GITHUB_WORKSPACE
           
-          # On force les variables d'environnement internes
-          export THEOS=/theos
-          export PATH=$THEOS/bin:$PATH
-          
-          # On compile en mode rootless (plus moderne)
+          # 2. Compiler (on utilise le SDK inclus dans l'image)
           make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          
+          # 3. FIX DES PERMISSIONS (Indispensable pour Docker)
+          # On redonne les droits à l'utilisateur standard pour l'artifact
+          chown -R 1001:127 .
         working-directory: ${{ github.workspace }}
 
       - name: Upload Artifact
