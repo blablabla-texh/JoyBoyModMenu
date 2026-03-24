@@ -11,12 +11,16 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential curl perl git checkinstall libssl-dev
+          sudo apt-get install -y build-essential curl perl git libssl-dev xz-utils
 
       - name: Setup Theos
         run: |
           git clone --recursive https://github.com/theos/theos.git ~/theos
-          curl -L https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz | tar -xJ -C ~/theos/sdks
+          # Utilisation d'un lien direct plus stable pour le SDK
+          mkdir -p ~/theos/sdks
+          curl -L "https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz" -o ~/theos/sdks/sdk.tar.xz
+          tar -xJf ~/theos/sdks/sdk.tar.xz -C ~/theos/sdks/
+          rm ~/theos/sdks/sdk.tar.xz
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "~/theos/bin" >> $GITHUB_PATH
 
