@@ -1,9 +1,9 @@
-Package: com.blablabla.joyboymodmenu
+Package: com.joyboy.onestate
 Name: JoyBoyModMenu
 Depends: mobilesubstrate
-Version: 0.0.1
+Version: 1.0.0
 Architecture: iphoneos-arm
-Description: Mon premier Mod Menu
-Maintainer: blablabla-texh
-Author: blablabla-texh
+Description: Mod Menu pour OneState
+Maintainer: JoyBoy
+Author: JoyBoy
 Section: Tweaks
