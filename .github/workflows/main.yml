@@ -3,28 +3,21 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/theos/theos:latest
+    runs-on: macos-latest
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
 
+      - name: Setup Theos
+        uses: theos/setup-theos@v1
+        with:
+          theos-src: https://github.com/theos/theos.git
+
       - name: Build Package
         run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          
-          # Téléchargement forcé des headers Substrate (pour éviter l'erreur rouge)
-          curl -L https://github.com/theos/headers/archive/master.tar.gz | tar -xz -C /theos/include --strip-components=1
-          
-          export THEOS=/theos
-          # On compile
+          export THEOS=$GITHUB_WORKSPACE/theos
           make package FINALPACKAGE=1
-          
-          # On donne les droits pour l'artifact
-          chown -R 1001:127 .
-        working-directory: ${{ github.workspace }}
-
+        
       - name: Upload Artifact
         if: success()
         uses: actions/upload-artifact@v4
