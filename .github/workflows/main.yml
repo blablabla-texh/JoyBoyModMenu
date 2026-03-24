@@ -11,7 +11,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential perl git libssl-dev
+          sudo apt-get install -y build-essential perl git libssl-dev ccache
 
       - name: Setup Theos
         run: |
@@ -19,17 +19,22 @@ jobs:
           echo "THEOS=~/theos" >> $GITHUB_ENV
           echo "~/theos/bin" >> $GITHUB_PATH
 
-      - name: Setup SDK (The Hard Way)
+      - name: Setup Toolchain
         run: |
-          # On nettoie tout avant pour éviter l'erreur "already exists"
+          # On télécharge les outils de compilation pour Linux
+          curl -LO https://github.com/theos/toolchain/releases/download/linux-arm64/toolchain-linux-arm64.tar.xz
+          mkdir -p ~/theos/toolchain/linux/iphone
+          tar -xJf toolchain-linux-arm64.tar.xz -C ~/theos/toolchain/linux/iphone
+          rm toolchain-linux-arm64.tar.xz
+
+      - name: Setup SDK
+        run: |
           rm -rf ~/theos/sdks
-          # On clone directement le dossier des SDKs
           git clone --depth 1 https://github.com/theos/sdks.git ~/theos/sdks
 
       - name: Build Package
         run: |
           export THEOS=~/theos
-          # On force le chemin vers le SDK qu'on vient de cloner
           make package FINALPACKAGE=1 SDKPATH=~/theos/sdks/iPhoneOS14.5.sdk
         env:
           THEOS: ~/theos
