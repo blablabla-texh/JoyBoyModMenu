@@ -1,20 +1,16 @@
 name: Build Tweak
 on: [push, pull_request]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Prepare Theos
+
+      - name: Setup Theos
         uses: RandomHashCoding/theos-action@v1
+
       - name: Build Package
         run: |
           make package FINALPACKAGE=1
-        env:
-          THEOS: ${{ github.workspace }}/theos
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: JoyBoyModMenu-Package
-          path: packages/*.deb
